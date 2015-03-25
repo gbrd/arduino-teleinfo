@@ -7,3 +7,16 @@ Based on random code found an the web (probably the one from domitik teleinfo mo
 
 
 *** WORK IN PROGRESS, NOT TESTED ***
+
+#include <SoftwareSerial.h>
+SoftwareSerial serial(2,3);
+TeleInfo teleinfo(&serial);
+
+or 
+
+TeleInfo teleinfo(&Serial);
+
+
+
+
+serial.begin(1200) must be done in setup()

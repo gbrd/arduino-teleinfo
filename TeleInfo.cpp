@@ -1,10 +1,14 @@
-#include "teleinfo.h"
+#include "Arduino.h"
+#include "TeleInfo.h"
 
-Teleinfo::Teleinfo(uint8_t rxPin,uint8_t txPin)
+
+TeleInfo::TeleInfo(Stream* serial)
+//TeleInfo::TeleInfo(uint8_t rxPin,uint8_t txPin)
 {
-  _rxPin = rxPin;
-  _txPin = txPin;
-  this->_cptSerial = new SoftwareSerial(2,3);
+  //_rxPin = rxPin;
+  //_txPin = txPin;
+  //this->_cptSerial = new SoftwareSerial(2,3);
+  this->_cptSerial = serial;
   
   _checksum[0] = '\0';
   //Ligne[0] = '\0';
@@ -15,7 +19,7 @@ Teleinfo::Teleinfo(uint8_t rxPin,uint8_t txPin)
   MOTDETAT[0] = '\0';
   
 }
-void Teleinfo::resetAll(){
+void TeleInfo::resetAll(){
   // vider les infos de la dernière trame lue 
 
   memset(_trame,'\0',512);
@@ -34,9 +38,9 @@ void Teleinfo::resetAll(){
 
 
 
-void Teleinfo::begin()
+void TeleInfo::begin()
 {
-  _cptSerial->begin(1200);
+  //_cptSerial->begin(1200);
   resetAll();
   
   //if (cptSerial.available()){
@@ -49,7 +53,7 @@ void Teleinfo::begin()
 /*------------------------------------------------------------------------------*/
 /* Test checksum d'un message (Return 1 si checkum ok)            */
 /*------------------------------------------------------------------------------*/
-boolean Teleinfo::checksum_ok(char *etiquette, char *valeur, char checksum) 
+boolean TeleInfo::checksum_ok(char *etiquette, char *valeur, char checksum) 
 {
    unsigned char sum = 32 ;      // Somme des codes ASCII du message + un espace
    int i ;
@@ -68,7 +72,7 @@ boolean Teleinfo::checksum_ok(char *etiquette, char *valeur, char checksum)
 }
 
 
-int Teleinfo::lireEtiquette(char *ligne){
+int TeleInfo::lireEtiquette(char *ligne){
     int i;
     int j=0;
     memset(Etiquette,'\0',9);
@@ -84,7 +88,7 @@ int Teleinfo::lireEtiquette(char *ligne){
 }
 
 
-int Teleinfo::lireValeur(char *ligne, int offset){
+int TeleInfo::lireValeur(char *ligne, int offset){
     int i;
     int j=0;
     memset(Donnee,'\0',13);
@@ -99,7 +103,7 @@ int Teleinfo::lireValeur(char *ligne, int offset){
    }
 }
 
-void Teleinfo::lireChecksum(char *ligne, int offset){
+void TeleInfo::lireChecksum(char *ligne, int offset){
   int i;
   int j=0;
   memset(_checksum,'\0',32);
@@ -111,7 +115,7 @@ void Teleinfo::lireChecksum(char *ligne, int offset){
 }
 
 
-boolean Teleinfo::affecteEtiquette(char *etiquette, char *valeur){
+boolean TeleInfo::affecteEtiquette(char *etiquette, char *valeur){
 
  if(strcmp(etiquette,"ADCO") == 0) { 
    memset(ADCO,'\0',12); memcpy(ADCO, valeur,strlen(valeur));
@@ -176,7 +180,7 @@ boolean Teleinfo::affecteEtiquette(char *etiquette, char *valeur){
 }
 
 
-boolean Teleinfo::decodeLigne(char *ligne){ 
+boolean TeleInfo::decodeLigne(char *ligne){ 
   
   //_checksum='\0';
   int debutValeur; 
@@ -196,7 +200,7 @@ boolean Teleinfo::decodeLigne(char *ligne){
 }
 
 
-boolean Teleinfo::lireTrame(){
+boolean TeleInfo::lireTrame(){
     int i;
     int j=0;
     char ligne[32] = "";
@@ -219,14 +223,14 @@ boolean Teleinfo::lireTrame(){
 
 
 
-boolean Teleinfo::available(){
+boolean TeleInfo::available(){
   return _isAvailable;
 }
 
 
 
 
-void Teleinfo::loop(){
+void TeleInfo::process(){
   char caractereRecu ='\0';
   while (_cptSerial->available()) {
     caractereRecu = _cptSerial->read() & 0x7F;
@@ -246,7 +250,7 @@ void Teleinfo::loop(){
   }
 }
 
-void Teleinfo::resetAvailable(){
+void TeleInfo::resetAvailable(){
   _isAvailable = false;
 }
 

@@ -1,22 +1,23 @@
 #ifndef Teleinfo_h
 #define Teleinfo_h
-#include <SoftwareSerial.h>
+
 #include <stdint.h>
 
 
 #include "Arduino.h"
+#include <Stream.h>
 
 
-
-class Teleinfo
+class TeleInfo
 {
   public:
-    Teleinfo(uint8_t rxPin,uint8_t txPin);
+    //TeleInfo(uint8_t rxPin,uint8_t txPin);
+	TeleInfo(Stream* serial);
 
     void begin();
     
     boolean available();
-    void loop();
+    void process();
     
     void resetAvailable();
 
@@ -32,9 +33,9 @@ class Teleinfo
     boolean decodeLigne(char *ligne);
     boolean lireTrame(); 
     
-    uint8_t _rxPin;
-    uint8_t _txPin;
-    SoftwareSerial* _cptSerial;
+    //uint8_t _rxPin;
+    //uint8_t _txPin;
+    Stream* _cptSerial;
     
 
     
