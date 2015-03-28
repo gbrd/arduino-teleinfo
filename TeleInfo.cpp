@@ -23,17 +23,17 @@ void TeleInfo::resetAll(){
   // vider les infos de la dernière trame lue 
 
   memset(_trame,'\0',512);
-  memset(ADCO,'\0',12);
-  HCHC = 0;
-  HCHP = 0;
+  memset(_adco,'\0',12);
+  _hchc = 0;
+  _hchp = 0;
   memset(PTEC,'\0',4);
   memset(HHPHC,'\0',2);
-  IINST = 0;
-  PAPP = 0;
+  _iinst = 0;
+  _papp = 0;
   IMAX = 0;
   memset(OPTARIF,'\0',4);
   memset(MOTDETAT,'\0',10);
-  ISOUSC = 0;
+  _isousc = 0;
 }
 
 
@@ -114,22 +114,42 @@ void TeleInfo::lireChecksum(char *ligne, int offset){
   }
 }
 
+char* TeleInfo::getAdco(){
+	return _adco;
+}
+int TeleInfo::getIsousc(){
+	return _isousc;
+}
+int TeleInfo::getIinst(){
+	return _iinst;
+}
+long TeleInfo::getHchc(){
+	return _hchc;
+}
+long TeleInfo::getHcHp(){
+	return _hchp;
+}
+long TeleInfo::getPapp(){
+	return _papp;
+}
+
+
 
 boolean TeleInfo::affecteEtiquette(char *etiquette, char *valeur){
 
  if(strcmp(etiquette,"ADCO") == 0) { 
-   memset(ADCO,'\0',12); memcpy(ADCO, valeur,strlen(valeur));
-   Serial.print("ADCO="); Serial.println(ADCO);
+   memset(_adco,'\0',12); memcpy(_adco, valeur,strlen(valeur));
+   Serial.print("ADCO="); Serial.println(_adco);
    Serial.print("valeur="); Serial.println(valeur);
  }
  else
- if(strcmp(etiquette,"HCHC") == 0) { HCHC = atol(valeur); 
-   Serial.print("HCHC="); Serial.println(HCHC);
+ if(strcmp(etiquette,"HCHC") == 0) { _hchc = atol(valeur); 
+   Serial.print("HCHC="); Serial.println(_hchc);
    Serial.print("valeur="); Serial.println(valeur);
  }
  else
- if(strcmp(etiquette,"HCHP") == 0) { HCHP = atol(valeur); 
-   Serial.print("HCHP="); Serial.println(HCHP);
+ if(strcmp(etiquette,"HCHP") == 0) { _hchp = atol(valeur); 
+   Serial.print("HCHP="); Serial.println(_hchp);
    Serial.print("valeur="); Serial.println(valeur);
  }
  else
@@ -144,13 +164,13 @@ boolean TeleInfo::affecteEtiquette(char *etiquette, char *valeur){
    Serial.print("valeur="); Serial.println(valeur);
  }
  else
- if(strcmp(Etiquette,"IINST") == 0) { IINST = atoi(valeur);
-   Serial.print("IINST="); Serial.println(IINST);
+ if(strcmp(Etiquette,"IINST") == 0) { _iinst = atoi(valeur);
+   Serial.print("IINST="); Serial.println(_iinst);
    Serial.print("valeur="); Serial.println(valeur);
  }
  else
- if(strcmp(Etiquette,"PAPP") == 0) { PAPP = atol(valeur);
-   Serial.print("PAPP="); Serial.println(PAPP);
+ if(strcmp(Etiquette,"PAPP") == 0) { _papp = atol(valeur);
+   Serial.print("PAPP="); Serial.println(_papp);
    Serial.print("valeur="); Serial.println(valeur); 
  }
  else
@@ -164,8 +184,8 @@ boolean TeleInfo::affecteEtiquette(char *etiquette, char *valeur){
    Serial.print("valeur="); Serial.println(valeur); 
  }
  else
- if(strcmp(Etiquette,"ISOUSC") == 0) { ISOUSC = atoi(valeur);
-   Serial.print("ISOUSC="); Serial.println(ISOUSC);
+ if(strcmp(Etiquette,"ISOUSC") == 0) { _isousc = atoi(valeur);
+   Serial.print("ISOUSC="); Serial.println(_isousc);
    Serial.print("valeur="); Serial.println(valeur);  
  }
  else
