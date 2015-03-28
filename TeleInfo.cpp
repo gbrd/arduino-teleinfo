@@ -49,6 +49,13 @@ void TeleInfo::process(){
   char caractereRecu ='\0';
   while (_cptSerial->available()) {
     caractereRecu = _cptSerial->read() & 0x7F;
+
+/*
+    Serial.print(caractereRecu,HEX);
+    Serial.print(" ");
+    if(caractereRecu == 0x20 || caractereRecu == 0x0A || caractereRecu == 0x0D || caractereRecu == 0x03)
+	Serial.println("");
+*/
     //"Start Text 002" debut de la trame
     if(caractereRecu == 0x02){
       _trameIndex = 0;
@@ -57,10 +64,15 @@ void TeleInfo::process(){
     _trameIndex++;
     
     //  "EndText 003" Fin de trame
-    if(caractereRecu == 0x03){
+    if(caractereRecu == 0x03 && _trame[0] == 0x02){
       _trame[_trameIndex]='\0';
       _trameIndex++;
+      Serial.println("");
+      //Serial.println("*** will try to decode trame=");
+      ////Serial.println(_trame);
+      //Serial.println("*** END trame ***");
       _isAvailable = lireTrame();
+      if(_isAvailable) break;
     }
   }
 }
@@ -96,13 +108,6 @@ boolean TeleInfo::isChecksumValid(char *label, char *data, char checksum)
    for (i=0; i < strlen(label); i++) sum = sum + label[i] ;
    for (i=0; i < strlen(data); i++) sum = sum + data[i] ;
    sum = (sum & 63) + 32 ;
-   /*
-   Serial.print(etiquette);Serial.print(" ");
-   Serial.print(valeur);Serial.print(" ");
-   Serial.println(checksum);
-   Serial.print("Sum = "); Serial.println(sum);
-   Serial.print("Cheksum = "); Serial.println(int(checksum));
-   */
    return ( sum == checksum);
 }
 
@@ -115,7 +120,7 @@ int TeleInfo::readLabel(int beginIndex, char* label){
 		j++;
 		i++;
 	}
-	if(j == LABEL_MAX_SIZE){
+	if(j == LABEL_MAX_SIZE+1){
 		return -1;
 	}else{
 		label[j] = '\0';
@@ -133,7 +138,7 @@ int TeleInfo::readData(int beginIndex, char *data){
 		j++;
 		i++;
 	}
-	if(j == DATA_MAX_SIZE){
+	if(j == DATA_MAX_SIZE+1){
 		return -1;
 	}else{
 		data[j] = '\0';
@@ -146,42 +151,62 @@ int TeleInfo::readData(int beginIndex, char *data){
 
 
 boolean TeleInfo::lireTrame(){
-    
+    Serial.println("will read a trame");
     int j=0;
-	int ligneIndex = 0;
+    int ligneIndex = 0;
     boolean trameOk = true;
     //start i at 1 to skip first char 0x02 (start byte)
 	int i=1;
 	while(_trame[i] != 0x03 && ligneIndex < LINE_MAX_COUNT){
+    		//Serial.println("read trame line start");
 		if(_trame[i] != 0x0A){
+			Serial.print(_trame[i], HEX);
+			Serial.println(" trame KO 0A -- ");
+			
 			trameOk = false;
 			break;
 		}
+
 		i++;
 		i = readLabel(i,_label[ligneIndex]);
 		if(i<0) {
+			Serial.println("trame KO label");
 			trameOk = false;
 			break;
 		}
+		//Serial.print("label=");
+		//Serial.println(_label[ligneIndex]);
+
 		i = readData(i,_data[ligneIndex]);
 		if(i<0) {
+			Serial.println("trame KO data");
 			trameOk = false;
 			break;
 		}
+
+		//Serial.print("data=");
+		//Serial.println(_data[ligneIndex]);
+
 		char checksum = _trame[i];
+		//Serial.print("checksum is ");
+		//Serial.println(checksum, HEX);
 		i++;
 		if(_trame[i] != 0x0D){
+			Serial.print(_trame[i], HEX);
+			Serial.println("  -trame KO 0D");
 			trameOk = false;
 			break;
 		}
 		i++;
 		if(!isChecksumValid(_label[ligneIndex],_data[ligneIndex],checksum)){
+			Serial.println("trame KO checksum");
 			trameOk = false;
 			break;
 		}
 		ligneIndex++;
    }
    if(ligneIndex >= LINE_MAX_COUNT){
+			Serial.println("trame KO LINE_MAX_COUNT");
 		trameOk = false;
    }else{
 		_dataCount = ligneIndex;
@@ -189,7 +214,12 @@ boolean TeleInfo::lireTrame(){
    if(!trameOk){
 		_dataCount = 0;
    }
-   
+	if(!trameOk){
+	   Serial.println("trame KO ");
+	}else{
+		Serial.println("trame OK !!! ");
+	}
+
    return trameOk;
 }
 

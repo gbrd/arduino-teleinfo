@@ -16,7 +16,7 @@ void setup(){
 void loop(){
     teleinfo.process();
   if(teleinfo.available()){
-    teleinfo.resetAvailable();
     teleinfo.printAllToSerial();
+    teleinfo.resetAvailable();
   }    
 }
