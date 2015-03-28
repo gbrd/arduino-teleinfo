@@ -25,6 +25,7 @@ const char * TeleInfo::getStringVal(const char * label){
   }else{
     res = _data[i];
   }
+  return res;
 }
 long TeleInfo::getLongVal(const char * label){
   const char * stringVal = getStringVal(label);
@@ -52,6 +53,11 @@ boolean TeleInfo::available(){
 void TeleInfo::process(){
   char caractereRecu ='\0';
   while (_cptSerial->available()) {
+
+    //if(_cptSerial->overflow()){
+    //    _frameIndex = 0;
+    //}
+
     caractereRecu = _cptSerial->read() & 0x7F;
     
     if(_isDebug){
