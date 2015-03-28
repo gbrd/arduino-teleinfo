@@ -7,6 +7,10 @@
 #include "Arduino.h"
 #include <Stream.h>
 
+#define LABEL_MAX_SIZE 8
+#define DATA_MAX_SIZE 16
+#define LINE_MAX_COUNT 32
+
 
 class TeleInfo
 {
@@ -20,13 +24,26 @@ class TeleInfo
     void process();
     
     void resetAvailable();
+	
+	/**
+	 * return NULL if this label is not found
+	 */
+	const char * getStringVal(const char * label);
+	/**
+	 * return a negative valure if this label is not found
+	 */
+	long getLongVal(const char * label);
+	
+	void printAllToSerial();
 
+	/*
     char* getAdco();
 	int getIsousc();
 	int getIinst();
 	long getHchc();
 	long getHcHp();
 	long getPapp();
+	*/
 	
 	//char* getPtec();
 	//char* getHhphc();
@@ -37,31 +54,32 @@ class TeleInfo
 
   private:
     void resetAll();
-    boolean checksum_ok(char *etiquette, char *valeur, char checksum); 
-    int lireEtiquette(char *ligne);
-    int lireValeur(char *ligne, int offset);
-    void lireChecksum(char *ligne, int offset);
-    boolean affecteEtiquette(char *etiquette, char *valeur);
-    boolean decodeLigne(char *ligne);
+    boolean decodeLigne(char *ligne, char* label, char * data);
+    int readLabel(int beginIndex, char* label);
+    int readData(int beginIndex, char* data);	
+	
+    boolean isChecksumValid(char *label, char *data, char checksum); 
+
     boolean lireTrame(); 
     
-    //uint8_t _rxPin;
-    //uint8_t _txPin;
     Stream* _cptSerial;
     
 
-    
-    /***************** Teleinfo configuration part *******************/
 	
     boolean _isAvailable = false;
     //char CaractereRecu ='\0';
     
     char _trame[512];
     int _trameIndex = 0;
-    
+	
+	char _label[LINE_MAX_COUNT][LABEL_MAX_SIZE+1]; //+1 for '\0' ending
+	char _data[LINE_MAX_COUNT][DATA_MAX_SIZE+1];
+	int _dataCount = 0;
+	
+    /*
     char _checksum[32];
-    char Etiquette[9];
-    char Donnee[13];
+    char _etiquette[9];
+    char _donnee[13];
     
 	//TODO rename according naming conventions !
 	//TODO autres options tarifaires !
@@ -78,7 +96,7 @@ class TeleInfo
     char OPTARIF[4] ;    // Option tarifaire choisie, 4 alphanumériques (BASE => Option Base, HC.. => Option Heures Creuses, EJP. => Option EJP, BBRx => Option Tempo [x selon contacts auxiliaires])
     char MOTDETAT[10];  // Mot d'état du compteur, 10 alphanumériques
     
-    
+    */
     /******************* END OF CONFIGURATION *******************/
     
 
