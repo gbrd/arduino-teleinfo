@@ -5,34 +5,35 @@ For french teleinfo system (ERDF)
 
 ##Note
 
-* In setup, you have to call:
+In setup, you have to call:
 
     serial.begin(1200)
 
-* Initialization for software serial:
+Initialization for software serial:
+
 
     #include <SoftwareSerial.h>
     SoftwareSerial serial(2,3);
     TeleInfo teleinfo(&serial);
 
-* Initialization for hardware serial:  (not tested)
+Initialization for hardware serial:  (not tested)
 
-  TeleInfo teleinfo(&Serial);
+    TeleInfo teleinfo(&Serial);
 
 
 ##Example: 
 
   
     #include <TeleInfo.h>
-  
+    
     #include <SoftwareSerial.h>
-  
+    
     const int rxPin = 2;
     const int txPin = 3;
-  
+    
     SoftwareSerial serial(2,3);
     TeleInfo teleinfo(&serial);
-  
+    
     void setup(){
       serial.begin(1200);
       Serial.begin(9600);
