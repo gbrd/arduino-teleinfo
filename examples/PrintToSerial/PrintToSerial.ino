@@ -14,9 +14,17 @@ void setup(){
   teleinfo.begin();
 }
 void loop(){
-    teleinfo.process();
+  teleinfo.process();
   if(teleinfo.available()){
+    Serial.println("--- tele info available --- ");
     teleinfo.printAllToSerial();
+    Serial.println("------ ");
+    const char *periodTarif = teleinfo.getStringVal("PTEC");
+    Serial.print("Period Tarifaire = ");
+    periodTarif == NULL ? Serial.println("unknown") : Serial.println(periodTarif);
+    long power = teleinfo.getLongVal("PAPP");
+    Serial.print("Power = ");
+    power < 0 ? Serial.println("unknown") : Serial.println(power);
     teleinfo.resetAvailable();
   }    
 }

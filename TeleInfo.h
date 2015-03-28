@@ -14,93 +14,50 @@
 
 class TeleInfo
 {
-  public:
-    //TeleInfo(uint8_t rxPin,uint8_t txPin);
-	TeleInfo(Stream* serial);
-
-    void begin();
-    
-    boolean available();
-    void process();
-    
-    void resetAvailable();
-	
-	/**
-	 * return NULL if this label is not found
-	 */
-	const char * getStringVal(const char * label);
-	/**
-	 * return a negative valure if this label is not found
-	 */
-	long getLongVal(const char * label);
-	
-	void printAllToSerial();
-
-	/*
-    char* getAdco();
-	int getIsousc();
-	int getIinst();
-	long getHchc();
-	long getHcHp();
-	long getPapp();
-	*/
-	
-	//char* getPtec();
-	//char* getHhphc();
-    //long getImax();
-    //char* getOptTarif()
-    //char* getMotdetat(); 
-    
-
-  private:
-    void resetAll();
-    boolean decodeLigne(char *ligne, char* label, char * data);
-    int readLabel(int beginIndex, char* label);
-    int readData(int beginIndex, char* data);	
-	
-    boolean isChecksumValid(char *label, char *data, char checksum); 
-
-    boolean lireTrame(); 
-    
-    Stream* _cptSerial;
-    
-
-	
-    boolean _isAvailable = false;
-    //char CaractereRecu ='\0';
-    
-    char _trame[512];
-    int _trameIndex = 0;
-	
-	char _label[LINE_MAX_COUNT][LABEL_MAX_SIZE+1]; //+1 for '\0' ending
-	char _data[LINE_MAX_COUNT][DATA_MAX_SIZE+1];
-	int _dataCount = 0;
-	
-    /*
-    char _checksum[32];
-    char _etiquette[9];
-    char _donnee[13];
-    
-	//TODO rename according naming conventions !
-	//TODO autres options tarifaires !
-    char _adco[12] ;      // Adresse du concentrateur de téléreport (numéro de série du compteur), 12 numériques + \0
-    int _isousc = 0;    // Intensité souscrite, 2 numériques, A
-    int _iinst = 0;     // Monophasé - Intensité Instantanée, 3 numériques, A  (intensité efficace instantanée)    
-    long _hchc = 0;      // Index option Heures Creuses - Heures Creuses, 8 numériques, Wh
-    long _hchp = 0;      // Index option Heures Creuses - Heures Pleines, 8 numériques, Wh
-    long _papp = 0;      // Puissance apparente, 5 numérique, VA (arrondie à la dizaine la plus proche)
-    
-    char PTEC[4] ;      // Période Tarifaire en cours, 4 alphanumériques
-    char HHPHC[2] ; // Horaire Heures Pleines Heures Creuses, 1 alphanumérique (A, C, D, E ou Y selon programmation du compteur)
-    long IMAX = 0;      // Monophasé - Intensité maximale appelée, 3 numériques, A
-    char OPTARIF[4] ;    // Option tarifaire choisie, 4 alphanumériques (BASE => Option Base, HC.. => Option Heures Creuses, EJP. => Option EJP, BBRx => Option Tempo [x selon contacts auxiliaires])
-    char MOTDETAT[10];  // Mot d'état du compteur, 10 alphanumériques
-    
-    */
-    /******************* END OF CONFIGURATION *******************/
-    
-
-    
+public:
+  //TeleInfo(uint8_t rxPin,uint8_t txPin);
+  TeleInfo(Stream* serial);
+  
+  void begin();
+  
+  boolean available();
+  void process();
+  
+  void resetAvailable();
+  
+  /**
+   * return NULL if this label is not found
+   */
+  const char * getStringVal(const char * label);
+  /**
+   * return a negative valure if this label is not found
+   */
+  long getLongVal(const char * label);  
+  void printAllToSerial();
+  
+  void setDebug(boolean debug);
+  
+  
+private:
+  void resetAll();
+  int readLabel(int beginIndex, char* label);
+  int readData(int beginIndex, char* data);  
+  
+  boolean isChecksumValid(char *label, char *data, char checksum); 
+  
+  boolean readFrame(); 
+  
+  Stream* _cptSerial;
+  boolean _isDebug = false;
+  boolean _isAvailable = false;
+  
+  char _frame[512];
+  int _frameIndex = 0;
+  
+  char _label[LINE_MAX_COUNT][LABEL_MAX_SIZE+1]; //+1 for '\0' ending
+  char _data[LINE_MAX_COUNT][DATA_MAX_SIZE+1];
+  int _dataCount = 0;
+  
 };
 
 #endif
