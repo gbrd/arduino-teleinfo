@@ -23,7 +23,6 @@ Initialization for hardware serial:  (not tested)
 
 ##Example: 
 
-  
     #include <TeleInfo.h>
     
     #include <SoftwareSerial.h>
@@ -45,12 +44,19 @@ Initialization for hardware serial:  (not tested)
         Serial.println("--- tele info available --- ");
         teleinfo.printAllToSerial();
         Serial.println("------ ");
-        const char *periodTarif = teleinfo.getStringVal("PTEC");
-        Serial.print("Period Tarifaire = ");
-        periodTarif == NULL ? Serial.println("unknown") : Serial.println(periodTarif);
+        
+        //const char *periodTarif = teleinfo.getStringVal("PTECZ");
+        //Serial.print("Period Tarifaire = ");
+        //periodTarif == NULL ? Serial.println("unknown") : Serial.println(periodTarif);
+        
+        const char *opTarif = teleinfo.getStringVal("OPTARIF");
+        Serial.print("Option Tarifaire = ");
+        opTarif == NULL ? Serial.println("unknown") : Serial.println(opTarif);
+        
         long power = teleinfo.getLongVal("PAPP");
         Serial.print("Power = ");
         power < 0 ? Serial.println("unknown") : Serial.println(power);
+        
         teleinfo.resetAvailable();
       }    
     }
