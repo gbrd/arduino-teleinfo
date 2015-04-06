@@ -2,13 +2,26 @@
 #include "TeleInfo.h"
 
 
-TeleInfo::TeleInfo(Stream* serial)
+
+TeleInfo::TeleInfo(uint8_t rxPin,uint8_t txPin)
 {
-  this->_cptSerial = serial;
+  this->_softSerial = new SoftwareSerial (rxPin,txPin);
   _frame[0] = '\0';
-  
 }
 
+TeleInfo::TeleInfo()
+{
+  _frame[0] = '\0';
+}
+
+
+Stream* TeleInfo::getStream(){
+  return _softSerial == NULL ? (Stream*) &Serial : (Stream*) _softSerial;
+}
+
+boolean TeleInfo::overflow(){
+  return _softSerial == NULL ? false : _softSerial->overflow();
+}
 
 void TeleInfo::setDebug(boolean debug){
   _isDebug = debug;
@@ -52,13 +65,13 @@ boolean TeleInfo::available(){
 
 void TeleInfo::process(){
   char caractereRecu ='\0';
-  while (_cptSerial->available()) {
+  while (getStream()->available()) {
 
-    //if(_cptSerial->overflow()){
-    //    _frameIndex = 0;
-    //}
+    if(overflow()){
+        _frameIndex = 0;
+    }
 
-    caractereRecu = _cptSerial->read() & 0x7F;
+    caractereRecu = getStream()->read() & 0x7F;
     
     if(_isDebug){
       Serial.print(caractereRecu,HEX);
@@ -109,7 +122,13 @@ void TeleInfo::resetAll(){
 
 void TeleInfo::begin()
 {
-  //_cptSerial->begin(1200);
+  //getStream()->begin(1200);
+  if(_softSerial != NULL){
+    _softSerial->begin(1200);
+  }else{
+    Serial.begin(1200);
+  }
+
   resetAll();
 }
 
