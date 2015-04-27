@@ -2,9 +2,9 @@
 #include "TeleInfo.h"
 
 
-TeleInfo::TeleInfo(Stream* serial)
+TeleInfo::TeleInfo()
 {
-  this->_cptSerial = serial;
+  //this->_cptSerial = serial;
   _frame[0] = '\0';
   
 }
@@ -52,13 +52,13 @@ boolean TeleInfo::available(){
 
 void TeleInfo::process(){
   char caractereRecu ='\0';
-  while (_cptSerial->available()) {
+  while (Serial.available()) {
 
     //if(_cptSerial->overflow()){
     //    _frameIndex = 0;
     //}
 
-    caractereRecu = _cptSerial->read() & 0x7F;
+    caractereRecu = Serial.read() & 0x7F;
     
     if(_isDebug){
       Serial.print(caractereRecu,HEX);
@@ -109,7 +109,7 @@ void TeleInfo::resetAll(){
 
 void TeleInfo::begin()
 {
-  //_cptSerial->begin(1200);
+  //Serial.begin(1200);
   resetAll();
 }
 

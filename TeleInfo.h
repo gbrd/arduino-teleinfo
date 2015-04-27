@@ -1,6 +1,8 @@
 #ifndef Teleinfo_h
 #define Teleinfo_h
 
+#define TELEINFO_HARDSERIAL
+
 #include <stdint.h>
 
 
@@ -16,7 +18,7 @@ class TeleInfo
 {
 public:
   //TeleInfo(uint8_t rxPin,uint8_t txPin);
-  TeleInfo(Stream* serial);
+  TeleInfo();
   
   void begin();
   
@@ -47,7 +49,7 @@ private:
   
   boolean readFrame(); 
   
-  Stream* _cptSerial;
+  //Stream* _cptSerial;
   boolean _isDebug = false;
   boolean _isAvailable = false;
   
