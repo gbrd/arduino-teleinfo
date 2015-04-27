@@ -2,25 +2,35 @@
 #include "TeleInfo.h"
 
 
-
+#ifdef HARD_TELEINFO
+TeleInfo::TeleInfo()
+{
+  _frame[0] = '\0';
+}
+#else
 TeleInfo::TeleInfo(uint8_t rxPin,uint8_t txPin)
 {
   this->_softSerial = new SoftwareSerial (rxPin,txPin);
   _frame[0] = '\0';
 }
+#endif
 
-TeleInfo::TeleInfo()
-{
-  _frame[0] = '\0';
-}
 
 
 Stream* TeleInfo::getStream(){
-  return _softSerial == NULL ? (Stream*) &Serial : (Stream*) _softSerial;
+#ifdef HARD_TELEINFO
+  return (Stream*) &Serial;
+#else
+  return _softSerial;
+#endif
 }
 
 boolean TeleInfo::overflow(){
-  return _softSerial == NULL ? false : _softSerial->overflow();
+#ifdef HARD_TELEINFO
+  return false; // no overflow function available on Serial
+#else
+  return _softSerial->overflow();
+#endif
 }
 
 void TeleInfo::setDebug(boolean debug){
@@ -70,16 +80,21 @@ void TeleInfo::process(){
     if(overflow()){
         _frameIndex = 0;
     }
-
     caractereRecu = getStream()->read() & 0x7F;
     
     if(_isDebug){
       Serial.print(caractereRecu,HEX);
       Serial.print(" ");
-      if(caractereRecu == 0x20 || caractereRecu == 0x0A || caractereRecu == 0x0D || caractereRecu == 0x03)
+
+      if(caractereRecu == 0x20 
+        || caractereRecu == 0x0A 
+        || caractereRecu == 0x0D 
+        || caractereRecu == 0x03){
         Serial.println("");
+      }
+
     }
-    
+   
     //"Start Text 002" debut de la trame
     if(caractereRecu == 0x02){
       _frameIndex = 0;
@@ -122,12 +137,11 @@ void TeleInfo::resetAll(){
 
 void TeleInfo::begin()
 {
-  //getStream()->begin(1200);
-  if(_softSerial != NULL){
-    _softSerial->begin(1200);
-  }else{
+#ifdef HARD_TELEINFO
     Serial.begin(1200);
-  }
+#else
+    _softSerial->begin(1200);
+#endif
 
   resetAll();
 }
