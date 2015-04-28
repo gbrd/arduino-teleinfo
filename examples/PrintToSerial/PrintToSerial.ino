@@ -4,14 +4,12 @@
 
 const int rxPin = 2;
 const int txPin = 3;
-
-SoftwareSerial serial(2,3);
-TeleInfo teleinfo(&serial);
+TeleInfo teleinfo(rxPin,txPin);
 
 void setup(){
-  serial.begin(1200);
   Serial.begin(9600);
   teleinfo.begin();
+  //teleinfo.setDebug(true);
 }
 void loop(){
   teleinfo.process();

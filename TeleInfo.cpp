@@ -1,12 +1,17 @@
 #include "Arduino.h"
 #include "TeleInfo.h"
 
-
+/*
 TeleInfo::TeleInfo(Stream* serial)
 {
   this->_cptSerial = serial;
-  _frame[0] = '\0';
-  
+  _frame[0] = '\0'; 
+}
+*/
+TeleInfo::TeleInfo(uint8_t rxPin,uint8_t txPin) : _serial(rxPin,txPin){
+
+  _cptSerial = &_serial;
+  _frame[0] = '\0'; 
 }
 
 
@@ -54,9 +59,13 @@ void TeleInfo::process(){
   char caractereRecu ='\0';
   while (_cptSerial->available()) {
 
-    //if(_cptSerial->overflow()){
-    //    _frameIndex = 0;
-    //}
+
+    if(_serial.overflow()){
+      _frameIndex = 0;
+      //if(_isDebug){
+      //  Serial.println("overflow");
+      //}
+    }
 
     caractereRecu = _cptSerial->read() & 0x7F;
     
@@ -110,12 +119,11 @@ void TeleInfo::resetAll(){
 void TeleInfo::begin()
 {
   //_cptSerial->begin(1200);
+  _serial.begin(1200);
   resetAll();
 }
 
-/*------------------------------------------------------------------------------*/
-/* Test checksum d'un message (Return 1 si checkum ok)            */
-/*------------------------------------------------------------------------------*/
+
 boolean TeleInfo::isChecksumValid(char *label, char *data, char checksum) 
 {
   unsigned char sum = 32 ;      // Somme des codes ASCII du message + un espace

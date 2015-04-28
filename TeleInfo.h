@@ -3,9 +3,10 @@
 
 #include <stdint.h>
 
-
 #include "Arduino.h"
 #include <Stream.h>
+#include <SoftwareSerial.h>
+
 
 #define LABEL_MAX_SIZE 8
 #define DATA_MAX_SIZE 16
@@ -15,7 +16,7 @@
 class TeleInfo
 {
 public:
-  //TeleInfo(uint8_t rxPin,uint8_t txPin);
+  TeleInfo(uint8_t rxPin,uint8_t txPin);
   TeleInfo(Stream* serial);
   
   void begin();
@@ -48,6 +49,7 @@ private:
   boolean readFrame(); 
   
   Stream* _cptSerial;
+  SoftwareSerial _serial;
   boolean _isDebug = false;
   boolean _isAvailable = false;
   

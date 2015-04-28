@@ -3,40 +3,20 @@ teleinfo library for arduino
 
 For french teleinfo system (ERDF)
 
-##Note
-
-In setup, you have to call:
-
-    serial.begin(1200)
-
-Initialization for software serial:
-
-
-    #include <SoftwareSerial.h>
-    SoftwareSerial serial(2,3);
-    TeleInfo teleinfo(&serial);
-
-Initialization for hardware serial:  (not tested)
-
-    TeleInfo teleinfo(&Serial);
-
 
 ##Example: 
-
     #include <TeleInfo.h>
-    
+
     #include <SoftwareSerial.h>
-    
+
     const int rxPin = 2;
     const int txPin = 3;
-    
-    SoftwareSerial serial(2,3);
-    TeleInfo teleinfo(&serial);
-    
+    TeleInfo teleinfo(rxPin,txPin);
+
     void setup(){
-      serial.begin(1200);
       Serial.begin(9600);
       teleinfo.begin();
+      //teleinfo.setDebug(true);
     }
     void loop(){
       teleinfo.process();
@@ -60,3 +40,22 @@ Initialization for hardware serial:  (not tested)
         teleinfo.resetAvailable();
       }    
     }
+    
+## output example
+
+    --- tele info available --- 
+    ADCO => 012345678901
+    OPTARIF => HC..
+    ISOUSC => 45
+    HCHC => 043208559
+    HCHP => 059288067
+    PTEC => HP..
+    IINST => 003
+    IMAX => 044
+    PAPP => 00680
+    HHPHC => A
+    MOTDETAT => 400000
+    ------ 
+    Option Tarifaire = HC..
+    Power = 680
+
