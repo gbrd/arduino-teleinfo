@@ -1,10 +1,7 @@
 #include <TeleInfo.h>
 
-#include <SoftwareSerial.h>
 
-const int rxPin = 2;
-const int txPin = 3;
-TeleInfo teleinfo(rxPin,txPin);
+TeleInfo teleinfo(&Serial1);
 
 void setup(){
   Serial.begin(9600);

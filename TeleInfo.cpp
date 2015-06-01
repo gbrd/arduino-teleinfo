@@ -1,19 +1,19 @@
 #include "Arduino.h"
 #include "TeleInfo.h"
 
-/*
-TeleInfo::TeleInfo(Stream* serial)
+
+TeleInfo::TeleInfo(HardwareSerial* serial)
 {
   this->_cptSerial = serial;
   _frame[0] = '\0'; 
 }
-*/
+/*
 TeleInfo::TeleInfo(uint8_t rxPin,uint8_t txPin) : _serial(rxPin,txPin){
 
   //_cptSerial = &_serial;
   _frame[0] = '\0'; 
 }
-
+*/
 
 void TeleInfo::setDebug(boolean debug){
   _isDebug = debug;
@@ -57,17 +57,17 @@ boolean TeleInfo::available(){
 
 void TeleInfo::process(){
   char caractereRecu ='\0';
-  while (_serial.available()) {
+  while (_cptSerial->available()) {
 
 
-    if(_serial.overflow()){
-      _frameIndex = 0;
+    //if(_cptSerial->overflow()){
+      //_frameIndex = 0;
       //if(_isDebug){
       //  Serial.println("overflow");
       //}
-    }
+    //}
 
-    caractereRecu = _serial.read() & 0x7F;
+    caractereRecu = _cptSerial->read() & 0x7F;
     
     if(_isDebug){
       Serial.print(caractereRecu,HEX);
@@ -119,8 +119,8 @@ void TeleInfo::resetAll(){
 
 void TeleInfo::begin()
 {
-  //_serial.begin(1200);
-  _serial.begin(1200);
+  //_cptSerial->begin(1200);
+  _cptSerial->begin(1200);
   resetAll();
 }
 
