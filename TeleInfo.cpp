@@ -10,7 +10,7 @@ TeleInfo::TeleInfo(Stream* serial)
 */
 TeleInfo::TeleInfo(uint8_t rxPin,uint8_t txPin) : _serial(rxPin,txPin){
 
-  _cptSerial = &_serial;
+  //_cptSerial = &_serial;
   _frame[0] = '\0'; 
 }
 
@@ -57,7 +57,7 @@ boolean TeleInfo::available(){
 
 void TeleInfo::process(){
   char caractereRecu ='\0';
-  while (_cptSerial->available()) {
+  while (_serial.available()) {
 
 
     if(_serial.overflow()){
@@ -67,7 +67,7 @@ void TeleInfo::process(){
       //}
     }
 
-    caractereRecu = _cptSerial->read() & 0x7F;
+    caractereRecu = _serial.read() & 0x7F;
     
     if(_isDebug){
       Serial.print(caractereRecu,HEX);
@@ -80,6 +80,7 @@ void TeleInfo::process(){
     if(caractereRecu == 0x02){
       _frameIndex = 0;
     }
+    //TODO check _ frame overflow !!!
     _frame[_frameIndex] = caractereRecu;
     _frameIndex++;
     
@@ -118,7 +119,7 @@ void TeleInfo::resetAll(){
 
 void TeleInfo::begin()
 {
-  //_cptSerial->begin(1200);
+  //_serial.begin(1200);
   _serial.begin(1200);
   resetAll();
 }
