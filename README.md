@@ -3,6 +3,9 @@ teleinfo library for arduino
 
 For french teleinfo system (ERDF)
 
+WARN: it requires "a lot" of memory (about 600 bytes) and may be configured in Teleinfo.h for bigger frame size (other contracts). Nano and Uno has 2kB of meme. Arduino Mega 2560 has 8kB.
+HardwareSerial version is available on hardSerial branch (fine for arduino mega that has several hardware serial)
+
 
 ##Example: 
     #include <TeleInfo.h>
