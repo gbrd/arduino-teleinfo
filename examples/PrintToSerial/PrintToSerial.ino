@@ -1,10 +1,13 @@
 #include <TeleInfo.h>
+#include <SoftwareSerial.h>
 
+SoftwareSerial serial(2,3);
+TeleInfo teleinfo(&serial);
 
-TeleInfo teleinfo(&Serial1);
 
 void setup(){
   Serial.begin(9600);
+  serial.begin(1200);
   teleinfo.begin();
   //teleinfo.setDebug(true);
 }

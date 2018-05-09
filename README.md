@@ -7,7 +7,7 @@ WARN: it requires "a lot" of memory (about 600 bytes) and may be configured in T
 Nano and Uno has 2kB of memory. Arduino Mega 2560 has 8kB.
 Note: Arduino mega that has several hardware serial and bigger memory, it's nice for this usage.
 
-##Note
+## Note
 
 In setup, you have to call:
 
