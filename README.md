@@ -3,21 +3,42 @@ teleinfo library for arduino
 
 For french teleinfo system (ERDF)
 
-WARN: it requires "a lot" of memory (about 600 bytes) and may be configured in Teleinfo.h for bigger frame size (other contracts). Nano and Uno has 2kB of memory. Arduino Mega 2560 has 8kB.
-HardwareSerial version is available on hardSerial branch (fine for arduino mega that has several hardware serial)
+WARN: it requires "a lot" of memory (about 600 bytes) and may be configured in Teleinfo.h for bigger frame size (other contracts). 
+Nano and Uno has 2kB of memory. Arduino Mega 2560 has 8kB.
+Note: Arduino mega that has several hardware serial and bigger memory, it's nice for this usage.
 
+##Note
+
+In setup, you have to call:
+
+    serial.begin(1200)
+
+Initialization for software serial:
+
+    #include <SoftwareSerial.h>
+    SoftwareSerial serial(2,3);
+    TeleInfo teleinfo(&serial);
+
+Initialization for hardware serial:
+    TeleInfo teleinfo(&Serial);
 
 ## Example: 
 
     #include <TeleInfo.h>
     #include <SoftwareSerial.h>
-
+    
+    
     const int rxPin = 2;
     const int txPin = 3;
-    TeleInfo teleinfo(rxPin,txPin);
+    
+    SoftwareSerial serial(rxPin,txPin);
+    TeleInfo teleinfo(&serial);
+    //TeleInfo teleinfo(&Serial2);
 
     void setup(){
       Serial.begin(9600);
+      serial.begin(1200);
+      //Serial2.begin(1200);
       teleinfo.begin();
       //teleinfo.setDebug(true);
     }
@@ -61,4 +82,3 @@ HardwareSerial version is available on hardSerial branch (fine for arduino mega 
     ------ 
     Option Tarifaire = HC..
     Power = 680
-
