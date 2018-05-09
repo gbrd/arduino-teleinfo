@@ -16,7 +16,7 @@ class TeleInfo
 {
 public:
   //TeleInfo(uint8_t rxPin,uint8_t txPin);
-  TeleInfo(HardwareSerial* serial);
+  TeleInfo(Stream* serial);
   
   void begin();
   
@@ -47,7 +47,7 @@ private:
   
   boolean readFrame(); 
   
-  HardwareSerial* _cptSerial;
+  Stream* _cptSerial;
   //SoftwareSerial _serial;
   boolean _isDebug = false;
   boolean _isAvailable = false;
