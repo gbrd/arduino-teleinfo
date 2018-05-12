@@ -1,17 +1,27 @@
-# arduino-teleinfo
-teleinfo library for arduino 
+# Arduino-teleinfo
+Teleinfo library for arduino 
 
-For french teleinfo system (ERDF)
+For french teleinfo system (Enedis, ex ERDF).
+Your will need a very simple electonic circuit based on an optocoupler (SFH620A or SFH6206) and 2 resistors. Many sites explain how to build it (on some sell it).
 
-WARN: it requires "a lot" of memory (about 600 bytes) and may be configured in Teleinfo.h for bigger frame size (other contracts). 
+```
+Counter               _____________       /-------R2---- 3.3V
+   I1 -------R1-----1| optocoupler |4----/-------------- RX    Arduino
+   I2---------------2|_____________|3------------------- GND
+                     
+R1=1.2k
+R2=10k
+```
+
+## Warning
+This library requires "a lot" of memory (about 600 bytes) and may be configured in Teleinfo.h for bigger frame size (other contracts). 
 Nano and Uno has 2kB of memory. Arduino Mega 2560 has 8kB.
 Note: Arduino mega that has several hardware serial and bigger memory, it's nice for this usage.
 
-## Note
-
+## Important, initialization
 In setup, you have to call:
 
-    serial.begin(1200)
+    serial.begin(1200);
 
 Initialization for software serial:
 
@@ -20,6 +30,7 @@ Initialization for software serial:
     TeleInfo teleinfo(&serial);
 
 Initialization for hardware serial:
+
     TeleInfo teleinfo(&Serial);
 
 ## Example: 
@@ -31,13 +42,13 @@ Initialization for hardware serial:
     const int rxPin = 2;
     const int txPin = 3;
     
-    SoftwareSerial serial(rxPin,txPin);
-    TeleInfo teleinfo(&serial);
+    SoftwareSerial softSerial(rxPin,txPin);
+    TeleInfo teleinfo(&softSerial);
     //TeleInfo teleinfo(&Serial2);
 
     void setup(){
       Serial.begin(9600);
-      serial.begin(1200);
+      softSerial.begin(1200);
       //Serial2.begin(1200);
       teleinfo.begin();
       //teleinfo.setDebug(true);
