@@ -7,10 +7,25 @@
 #include <Stream.h>
 
 
+#if !defined(LABEL_MAX_SIZE)
 #define LABEL_MAX_SIZE 8
-#define DATA_MAX_SIZE 13
-#define LINE_MAX_COUNT 12
-#define FRAME_MAX_SIZE 350
+#endif
+
+#if !defined(DATA_MAX_SIZE)
+#define DATA_MAX_SIZE 15
+#endif
+
+#if !defined(LINE_MAX_COUNT)
+#define LINE_MAX_COUNT 20
+#endif
+
+#if !defined(FRAME_MAX_SIZE)
+#define FRAME_MAX_SIZE 700 
+#endif
+
+#if !defined(TIMESTAMP_MAX_SIZE)
+#define TIMESTAMP_MAX_SIZE 15
+#endif
 
 class TeleInfo
 {
@@ -40,10 +55,12 @@ public:
   
 private:
   void resetAll();
-  int readLabel(int beginIndex, char* label);
-  int readData(int beginIndex, char* data);  
+  //int readLabel(int beginIndex, char* label);
+  //int readData(int beginIndex, char* data);  
+  int readElement(int beginIndex, char* data, int maxSize);  
   
-  boolean isChecksumValid(char *label, char *data, char checksum); 
+  
+  boolean isChecksumValid(char *label, char *timestamp, char *data, char checksum); 
   
   boolean readFrame(); 
   
@@ -57,6 +74,7 @@ private:
   
   char _label[LINE_MAX_COUNT][LABEL_MAX_SIZE+1]; //+1 for '\0' ending
   char _data[LINE_MAX_COUNT][DATA_MAX_SIZE+1];
+  char _timestamp[LINE_MAX_COUNT][TIMESTAMP_MAX_SIZE+1];
   int _dataCount = 0;
   
 };

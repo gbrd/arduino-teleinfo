@@ -73,7 +73,7 @@ void TeleInfo::process(){
     if(_isDebug){
       Serial.print(caractereRecu,HEX);
       Serial.print(" ");
-      if(caractereRecu == 0x20 || caractereRecu == 0x0A || caractereRecu == 0x0D || caractereRecu == 0x03)
+      if(caractereRecu == 0x20 || caractereRecu == 0x09 || caractereRecu == 0x0A || caractereRecu == 0x0D || caractereRecu == 0x03)
         Serial.println("");
     }
     
@@ -122,15 +122,22 @@ void TeleInfo::begin()
 }
 
 
-boolean TeleInfo::isChecksumValid(char *label, char *data, char checksum) 
+boolean TeleInfo::isChecksumValid(char *label, char* timestamp, char *data, char checksum) 
 {
-  unsigned char sum = 32 ;      // Somme des codes ASCII du message + un espace
-  int i ;
+  unsigned char sum = 0;      
+  unsigned char sumH = 0x20;    // En mode historique : Somme des codes ASCII du message + un espace  
+  unsigned char sumS = 0x09 + 0x09; // En mode standard : Somme des codes ASCII du message + 2 tabs 
+  unsigned int i ;
   
   for (i=0; i < strlen(label); i++) sum = sum + label[i] ;
   for (i=0; i < strlen(data); i++) sum = sum + data[i] ;
-  sum = (sum & 63) + 32 ;
-  return ( sum == checksum);
+  if(timestamp != NULL){
+    for (i=0; i < strlen(timestamp); i++) sum = sum + data[i] ;
+    sumS = sumS + 0x09; // only in standard mode, one more separator 
+  }
+  sumS = ((sumS+sum) & 63) + 32 ;
+  sumH = ((sumH+sum) & 63) + 32 ;
+  return (sumS == checksum || sumH == checksum);
 }
 
 /**
@@ -138,33 +145,17 @@ boolean TeleInfo::isChecksumValid(char *label, char *data, char checksum)
  * return index pointing just after the label 
  */
   
-int TeleInfo::readLabel(int beginIndex, char* label){
+
+//DATA_MAX_SIZE or LABEL_MAX_SIZE
+int TeleInfo::readElement(int beginIndex, char *data, int maxSize){
   int i = beginIndex;
   int j=0;
-  while(_frame[i] != 0x20 && j < LABEL_MAX_SIZE){
-    label[j] = _frame[i];
-    j++;
-    i++;
-  }
-  if(j == LABEL_MAX_SIZE+1){
-    return -1;
-  }else{
-    label[j] = '\0';
-    i++;
-    return i;
-  }
-}
-
-
-int TeleInfo::readData(int beginIndex, char *data){
-  int i = beginIndex;
-  int j=0;
-  while(_frame[i] != 0x20 && j < DATA_MAX_SIZE){
+  while(_frame[i] != 0x20 && _frame[i] != 0x09 && j < maxSize){
     data[j] = _frame[i];
     j++;
     i++;
   }
-  if(j == DATA_MAX_SIZE+1){
+  if(j == maxSize+1){
     return -1;
   }else{
     data[j] = '\0';
@@ -175,10 +166,9 @@ int TeleInfo::readData(int beginIndex, char *data){
 
 
 
-
 boolean TeleInfo::readFrame(){
   if(_isDebug) Serial.println("will read a frame");
-  int j=0;
+  //int j=0;
   int lineIndex = 0;
   boolean frameOk = true;
   //start i at 1 to skip first char 0x02 (start byte)
@@ -194,7 +184,7 @@ boolean TeleInfo::readFrame(){
     }
     
     i++;
-    i = readLabel(i,_label[lineIndex]);
+    i = readElement(i,_label[lineIndex],LABEL_MAX_SIZE);
     if(i<0) {
       if(_isDebug){
         Serial.println("frame KO label");
@@ -206,8 +196,9 @@ boolean TeleInfo::readFrame(){
       Serial.print("label=");
       Serial.println(_label[lineIndex]);
     }
+        
     
-    i = readData(i,_data[lineIndex]);
+    i = readElement(i,_data[lineIndex],DATA_MAX_SIZE);
     if(i<0) {
       if(_isDebug) Serial.println("frame KO data");
       frameOk = false;
@@ -217,6 +208,12 @@ boolean TeleInfo::readFrame(){
     if(_isDebug) {
       Serial.print("data=");
       Serial.println(_data[lineIndex]);
+    }
+    if (_frame[i] == 0x9){
+      // we have a frame with timestamp !
+      // => copy data to timestamp and read again data
+      strcpy(_timestamp[lineIndex],_data[lineIndex]);
+      i = readElement(i,_data[lineIndex],DATA_MAX_SIZE);
     }
     
     char checksum = _frame[i];
@@ -231,7 +228,7 @@ boolean TeleInfo::readFrame(){
       break;
     }
     i++;
-    if(!isChecksumValid(_label[lineIndex],_data[lineIndex],checksum)){
+    if(!isChecksumValid(_label[lineIndex],_timestamp[lineIndex],_data[lineIndex],checksum)){
       if(_isDebug) Serial.println("frame KO checksum");
       frameOk = false;
       break;
